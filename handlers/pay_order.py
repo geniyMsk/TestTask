@@ -8,14 +8,13 @@ from DBCommands import DBCommands
 
 
 db = DBCommands()
-
+#КОРЗИНА(КОМАНДА START С АРГУМЕНТОМ 1)
 @dp.message_handler(commands=['start'], state='*')
 async def start(message:types.Message):
     chatid = message.from_user.id
     if message.get_args() != '':
 
         #ПОЛУЧАЕМ СПИСОК С ТОВАРАМИ В КОРЗИНЕ
-
         zakaz=json.loads((await db.select_zakaz(chatid=(f'{chatid}',))).fetchone()[0])
 
         #ПРОВЕРКА НА ПУСТОТУ КОРЗИНЫ
@@ -32,7 +31,8 @@ async def start(message:types.Message):
                 photo = (await db.select_photo(id)).fetchone()[0]
                 caption_text = (await db.select_caption(id)).fetchone()[0]
                 caption_price = (await db.select_price(id)).fetchone()[0]
-
+                
+                #ПОДПИСЬ К ФОТО ТОВАРА
                 if caption_text == 'None':
                     caption = f'Цена: {caption_price}'
                 else:
