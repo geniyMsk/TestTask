@@ -64,7 +64,6 @@ async def pre_check(checkout:types.PreCheckoutQuery):
 
         chatid = checkout.from_user.id
         zakaz = json.loads((await db.select_zakaz(chatid=(f'{chatid}',))).fetchone()[0])
-        # ОТПРАВКА КОРЗИНЫ
         for i in zakaz:
             id = (f'{i}',)
             photo = (await db.select_photo(id)).fetchone()[0]
@@ -72,7 +71,7 @@ async def pre_check(checkout:types.PreCheckoutQuery):
             price = (await db.select_price(id)).fetchone()[0]
 
             await bot.send_photo(photo=photo, caption=caption + '\n\nЦена: ' + f'{price}', chat_id=admin)
-        #await db.delete_user(chatid=(f'{chatid}',))
+        #ОБНУЛЕНИЕ КОРЗИНЫ ПОСЛЕ ОПЛАТЫ
         par = ('[]', chatid)
         await db.update_zakaz(par=par)
 
