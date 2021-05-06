@@ -15,13 +15,14 @@ class ADD(StatesGroup):
 
 db = DBCommands()
 
+#ДОБАВЛЕНИЕ КАРТОЧКИ
 for admin in ADMINS:
     @dp.message_handler(user_id=admin, commands=['add'], state='*')
     async def admin(message: types.Message):
         await message.answer("Отправьте карточку товара(без цены)")
         await ADD.add.set()
 
-
+#HANDLER ДЛЯ КАРТОЧКИ
 @dp.message_handler(content_types=['photo'], state=ADD.add)
 async def album_handler(message: types.Message):
     photo = message.photo[-1].file_id
@@ -34,12 +35,14 @@ async def album_handler(message: types.Message):
         id = 1
 
     caption = message.caption
+    
     par = (id, f'{photo}', f'{caption}')
     await db.add_card(par=par)
+    
     await message.answer("Напишите цену товара")
     await ADD.price.set()
 
-
+#HANDLER ДЛЯ ЦЕНЫ ТОВАРА
 @dp.message_handler(state=ADD.price)
 async def add_price(message: types.Message):
     try:
@@ -64,8 +67,9 @@ async def add_price(message: types.Message):
     else:
         caption = caption_text + '\n\n' + caption_price
 
+        
+    #INLINE КНОПКИ ПОД КАРТОЧКАМИ
     username = (await bot.get_me()).username
-
     inline = InlineKeyboardMarkup(
         inline_keyboard=[
             [
